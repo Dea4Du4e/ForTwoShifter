@@ -1,0 +1,828 @@
+
+fortwoshifter_v0.1um.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000003d8  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  0000044c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000017  00800060  00800060  0000044c  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  0000044c  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000047c  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000080  00000000  00000000  000004b8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00000d14  00000000  00000000  00000538  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 000006cf  00000000  00000000  0000124c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000664  00000000  00000000  0000191b  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000000ac  00000000  00000000  00001f80  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000003d6  00000000  00000000  0000202c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    0000032c  00000000  00000000  00002402  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000050  00000000  00000000  0000272e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	21 c0       	rjmp	.+66     	; 0x46 <__bad_interrupt>
+   4:	20 c0       	rjmp	.+64     	; 0x46 <__bad_interrupt>
+   6:	1f c0       	rjmp	.+62     	; 0x46 <__bad_interrupt>
+   8:	1e c0       	rjmp	.+60     	; 0x46 <__bad_interrupt>
+   a:	1d c0       	rjmp	.+58     	; 0x46 <__bad_interrupt>
+   c:	1c c0       	rjmp	.+56     	; 0x46 <__bad_interrupt>
+   e:	1b c0       	rjmp	.+54     	; 0x46 <__bad_interrupt>
+  10:	1a c0       	rjmp	.+52     	; 0x46 <__bad_interrupt>
+  12:	19 c0       	rjmp	.+50     	; 0x46 <__bad_interrupt>
+  14:	18 c0       	rjmp	.+48     	; 0x46 <__bad_interrupt>
+  16:	17 c0       	rjmp	.+46     	; 0x46 <__bad_interrupt>
+  18:	16 c0       	rjmp	.+44     	; 0x46 <__bad_interrupt>
+  1a:	15 c0       	rjmp	.+42     	; 0x46 <__bad_interrupt>
+  1c:	14 c0       	rjmp	.+40     	; 0x46 <__bad_interrupt>
+  1e:	13 c0       	rjmp	.+38     	; 0x46 <__bad_interrupt>
+  20:	12 c0       	rjmp	.+36     	; 0x46 <__bad_interrupt>
+  22:	11 c0       	rjmp	.+34     	; 0x46 <__bad_interrupt>
+  24:	10 c0       	rjmp	.+32     	; 0x46 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+
+00000032 <__do_clear_bss>:
+  32:	20 e0       	ldi	r18, 0x00	; 0
+  34:	a0 e6       	ldi	r26, 0x60	; 96
+  36:	b0 e0       	ldi	r27, 0x00	; 0
+  38:	01 c0       	rjmp	.+2      	; 0x3c <.do_clear_bss_start>
+
+0000003a <.do_clear_bss_loop>:
+  3a:	1d 92       	st	X+, r1
+
+0000003c <.do_clear_bss_start>:
+  3c:	a7 37       	cpi	r26, 0x77	; 119
+  3e:	b2 07       	cpc	r27, r18
+  40:	e1 f7       	brne	.-8      	; 0x3a <.do_clear_bss_loop>
+  42:	15 d0       	rcall	.+42     	; 0x6e <main>
+  44:	c7 c1       	rjmp	.+910    	; 0x3d4 <_exit>
+
+00000046 <__bad_interrupt>:
+  46:	dc cf       	rjmp	.-72     	; 0x0 <__vectors>
+
+00000048 <EEPROM_write>:
+#include "eeprom.h"
+void EEPROM_write(unsigned int uiAddress, unsigned char ucData)
+
+{
+
+	while(EECR & (1<<EEWE)) //ждем освобождения флага окончания последней операцией с памятью
+  48:	e1 99       	sbic	0x1c, 1	; 28
+  4a:	fe cf       	rjmp	.-4      	; 0x48 <EEPROM_write>
+
+	{}
+
+	EEAR = uiAddress; //Устанавливаем адрес
+  4c:	9f bb       	out	0x1f, r25	; 31
+  4e:	8e bb       	out	0x1e, r24	; 30
+
+	EEDR = ucData; //Пищем данные в регистр
+  50:	6d bb       	out	0x1d, r22	; 29
+
+	EECR |= (1<<EEMWE); //Разрешаем запись
+  52:	e2 9a       	sbi	0x1c, 2	; 28
+
+	EECR |= (1<<EEWE); //Пишем байт в память
+  54:	e1 9a       	sbi	0x1c, 1	; 28
+  56:	08 95       	ret
+
+00000058 <EEPROM_read>:
+
+unsigned char EEPROM_read(unsigned int uiAddress)
+
+{
+
+	while(EECR & (1<<EEWE))
+  58:	e1 99       	sbic	0x1c, 1	; 28
+  5a:	fe cf       	rjmp	.-4      	; 0x58 <EEPROM_read>
+
+	{} //ждем освобождения флага окончания последней операцией с памятью
+
+	EEAR = uiAddress; //Устанавливаем адрес
+  5c:	9f bb       	out	0x1f, r25	; 31
+  5e:	8e bb       	out	0x1e, r24	; 30
+
+	EECR |= (1<<EERE); //Запускаем операцию считывания из памяти в регистр данных
+  60:	e0 9a       	sbi	0x1c, 0	; 28
+
+	return EEDR; //Возвращаем результат
+  62:	8d b3       	in	r24, 0x1d	; 29
+
+  64:	08 95       	ret
+
+00000066 <port_ini>:
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+		case 3: USART_Transmit('D');   break;             //драйв
+		case 4: USART_Transmit('-');   break;             //-
+		case 5: USART_Transmit('+');   break;             //+
+		case 6: USART_Transmit('A');   break;             //авто/ручной
+  66:	14 ba       	out	0x14, r1	; 20
+  68:	8f ef       	ldi	r24, 0xFF	; 255
+  6a:	85 bb       	out	0x15, r24	; 21
+  6c:	08 95       	ret
+
+0000006e <main>:
+
+
+
+int main(void)
+{
+	port_ini();
+  6e:	fb df       	rcall	.-10     	; 0x66 <port_ini>
+	Amode=EEPROM_read(1);
+  70:	81 e0       	ldi	r24, 0x01	; 1
+  72:	90 e0       	ldi	r25, 0x00	; 0
+  74:	f1 df       	rcall	.-30     	; 0x58 <EEPROM_read>
+  76:	80 93 72 00 	sts	0x0072, r24	; 0x800072 <Amode>
+	A1=EEPROM_read(1);
+  7a:	81 e0       	ldi	r24, 0x01	; 1
+  7c:	90 e0       	ldi	r25, 0x00	; 0
+  7e:	ec df       	rcall	.-40     	; 0x58 <EEPROM_read>
+  80:	80 93 76 00 	sts	0x0076, r24	; 0x800076 <A1>
+	
+	USART_Init(8);
+  84:	88 e0       	ldi	r24, 0x08	; 8
+  86:	90 e0       	ldi	r25, 0x00	; 0
+  88:	98 d1       	rcall	.+816    	; 0x3ba <USART_Init>
+	
+	USART_Transmit('O');//Передаем при включении
+  8a:	8f e4       	ldi	r24, 0x4F	; 79
+  8c:	9f d1       	rcall	.+830    	; 0x3cc <USART_Transmit>
+
+	USART_Transmit('k');//сообщение "Ok!", что свидетельствует
+  8e:	8b e6       	ldi	r24, 0x6B	; 107
+  90:	9d d1       	rcall	.+826    	; 0x3cc <USART_Transmit>
+
+	USART_Transmit('!');//о правильно работе программы
+  92:	81 e2       	ldi	r24, 0x21	; 33
+  94:	9b d1       	rcall	.+822    	; 0x3cc <USART_Transmit>
+
+	USART_Transmit(0x0d);//переход в начало строки
+  96:	8d e0       	ldi	r24, 0x0D	; 13
+  98:	99 d1       	rcall	.+818    	; 0x3cc <USART_Transmit>
+
+	USART_Transmit(0x0a);//переход на новую строку
+  9a:	8a e0       	ldi	r24, 0x0A	; 10
+  9c:	97 d1       	rcall	.+814    	; 0x3cc <USART_Transmit>
+							_delay_ms(10);
+							Lpsh=0;
+							if (N==0)
+							{
+								gear_state(2);
+								N=1;
+  9e:	d1 e0       	ldi	r29, 0x01	; 1
+  a0:	cd 2f       	mov	r28, r29
+	USART_Transmit(0x0a);//переход на новую строку
+ 
+    while (1) 	
+    { 
+		//драйв
+		if (Lpsh==0) //запрет одновременной активации реверса и драйва
+  a2:	80 91 6a 00 	lds	r24, 0x006A	; 0x80006a <Lpsh>
+  a6:	81 11       	cpse	r24, r1
+  a8:	ad c0       	rjmp	.+346    	; 0x204 <main+0x196>
+		{
+					if (PINC&0x04) // запрет одновременного нажатия
+  aa:	9a 9b       	sbis	0x13, 2	; 19
+  ac:	ab c0       	rjmp	.+342    	; 0x204 <main+0x196>
+					{
+						if (bs_Rpsh==0) //включение драйва проверка состояния кнопки
+  ae:	80 91 75 00 	lds	r24, 0x0075	; 0x800075 <bs_Rpsh>
+  b2:	81 11       	cpse	r24, r1
+  b4:	2f c0       	rjmp	.+94     	; 0x114 <main+0xa6>
+						{
+							if (!(PINC&0x01)) //проверка текущего состояния кнопки
+  b6:	98 99       	sbic	0x13, 0	; 19
+  b8:	6f c1       	rjmp	.+734    	; 0x398 <main+0x32a>
+							{
+								Rpsh=1;
+  ba:	c0 93 6b 00 	sts	0x006B, r28	; 0x80006b <Rpsh>
+								if (Rpsh1==0)
+  be:	80 91 73 00 	lds	r24, 0x0073	; 0x800073 <Rpsh1>
+  c2:	81 11       	cpse	r24, r1
+  c4:	04 c0       	rjmp	.+8      	; 0xce <main+0x60>
+{
+	switch(gs)
+	{
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+		case 3: USART_Transmit('D');   break;             //драйв
+  c6:	84 e4       	ldi	r24, 0x44	; 68
+  c8:	81 d1       	rcall	.+770    	; 0x3cc <USART_Transmit>
+							{
+								Rpsh=1;
+								if (Rpsh1==0)
+								{
+									gear_state(3); //передача команды
+									Rpsh1=1;
+  ca:	c0 93 73 00 	sts	0x0073, r28	; 0x800073 <Rpsh1>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  ce:	83 ec       	ldi	r24, 0xC3	; 195
+  d0:	99 e0       	ldi	r25, 0x09	; 9
+  d2:	01 97       	sbiw	r24, 0x01	; 1
+  d4:	f1 f7       	brne	.-4      	; 0xd2 <main+0x64>
+  d6:	00 c0       	rjmp	.+0      	; 0xd8 <main+0x6a>
+  d8:	00 00       	nop
+								}
+								_delay_ms(10);
+								if (PINC&0x01) //пока кнопка зажата состояние не переключится
+  da:	98 9b       	sbis	0x13, 0	; 19
+  dc:	93 c0       	rjmp	.+294    	; 0x204 <main+0x196>
+								{
+									Rpsh1=0;
+  de:	10 92 73 00 	sts	0x0073, r1	; 0x800073 <Rpsh1>
+									bs_Rpsh=1;
+  e2:	c0 93 75 00 	sts	0x0075, r28	; 0x800075 <bs_Rpsh>
+									if ((Amode==1)&(A1==1)) //активация режима авто если он был активен до выключения и проверка однократной активации
+  e6:	8c 2f       	mov	r24, r28
+  e8:	90 91 72 00 	lds	r25, 0x0072	; 0x800072 <Amode>
+  ec:	91 30       	cpi	r25, 0x01	; 1
+  ee:	09 f0       	breq	.+2      	; 0xf2 <main+0x84>
+  f0:	80 e0       	ldi	r24, 0x00	; 0
+  f2:	88 23       	and	r24, r24
+  f4:	09 f4       	brne	.+2      	; 0xf8 <main+0x8a>
+  f6:	44 c1       	rjmp	.+648    	; 0x380 <main+0x312>
+  f8:	8c 2f       	mov	r24, r28
+  fa:	90 91 76 00 	lds	r25, 0x0076	; 0x800076 <A1>
+  fe:	91 30       	cpi	r25, 0x01	; 1
+ 100:	09 f0       	breq	.+2      	; 0x104 <main+0x96>
+ 102:	80 e0       	ldi	r24, 0x00	; 0
+ 104:	88 23       	and	r24, r24
+ 106:	09 f4       	brne	.+2      	; 0x10a <main+0x9c>
+ 108:	3b c1       	rjmp	.+630    	; 0x380 <main+0x312>
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+		case 3: USART_Transmit('D');   break;             //драйв
+		case 4: USART_Transmit('-');   break;             //-
+		case 5: USART_Transmit('+');   break;             //+
+		case 6: USART_Transmit('A');   break;             //авто/ручной
+ 10a:	81 e4       	ldi	r24, 0x41	; 65
+ 10c:	5f d1       	rcall	.+702    	; 0x3cc <USART_Transmit>
+									{										
+										//for (i=0; i<=10000; i++)//счётчик активности кнопки авто
+										//{
+										gear_state(6);
+										//}
+										A1=0;
+ 10e:	10 92 76 00 	sts	0x0076, r1	; 0x800076 <A1>
+ 112:	78 c0       	rjmp	.+240    	; 0x204 <main+0x196>
+								}
+							}
+						}
+						else // при состоянии кнопки ==1
+						{
+							if (!(PINC&0x01)) //проверить кнопку
+ 114:	98 99       	sbic	0x13, 0	; 19
+ 116:	76 c0       	rjmp	.+236    	; 0x204 <main+0x196>
+							{
+								A++; //счётчик удержания правого переключателя от себя
+ 118:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <A>
+ 11c:	90 91 67 00 	lds	r25, 0x0067	; 0x800067 <A+0x1>
+ 120:	a0 91 68 00 	lds	r26, 0x0068	; 0x800068 <A+0x2>
+ 124:	b0 91 69 00 	lds	r27, 0x0069	; 0x800069 <A+0x3>
+ 128:	01 96       	adiw	r24, 0x01	; 1
+ 12a:	a1 1d       	adc	r26, r1
+ 12c:	b1 1d       	adc	r27, r1
+ 12e:	80 93 66 00 	sts	0x0066, r24	; 0x800066 <A>
+ 132:	90 93 67 00 	sts	0x0067, r25	; 0x800067 <A+0x1>
+ 136:	a0 93 68 00 	sts	0x0068, r26	; 0x800068 <A+0x2>
+ 13a:	b0 93 69 00 	sts	0x0069, r27	; 0x800069 <A+0x3>
+ 13e:	83 ec       	ldi	r24, 0xC3	; 195
+ 140:	99 e0       	ldi	r25, 0x09	; 9
+ 142:	01 97       	sbiw	r24, 0x01	; 1
+ 144:	f1 f7       	brne	.-4      	; 0x142 <main+0xd4>
+ 146:	00 c0       	rjmp	.+0      	; 0x148 <main+0xda>
+ 148:	00 00       	nop
+								_delay_ms(10);
+								if ((PINC&0x01)&(A<40))// короткое нажатие
+ 14a:	33 b3       	in	r19, 0x13	; 19
+ 14c:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <A>
+ 150:	90 91 67 00 	lds	r25, 0x0067	; 0x800067 <A+0x1>
+ 154:	a0 91 68 00 	lds	r26, 0x0068	; 0x800068 <A+0x2>
+ 158:	b0 91 69 00 	lds	r27, 0x0069	; 0x800069 <A+0x3>
+ 15c:	2c 2f       	mov	r18, r28
+ 15e:	88 32       	cpi	r24, 0x28	; 40
+ 160:	91 05       	cpc	r25, r1
+ 162:	a1 05       	cpc	r26, r1
+ 164:	b1 05       	cpc	r27, r1
+ 166:	08 f0       	brcs	.+2      	; 0x16a <main+0xfc>
+ 168:	20 e0       	ldi	r18, 0x00	; 0
+ 16a:	22 23       	and	r18, r18
+ 16c:	09 f4       	brne	.+2      	; 0x170 <main+0x102>
+ 16e:	fb c0       	rjmp	.+502    	; 0x366 <main+0x2f8>
+ 170:	30 ff       	sbrs	r19, 0
+ 172:	f9 c0       	rjmp	.+498    	; 0x366 <main+0x2f8>
+void gear_state(unsigned char gs)   //состояния кпп
+{
+	switch(gs)
+	{
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+ 174:	8e e4       	ldi	r24, 0x4E	; 78
+ 176:	2a d1       	rcall	.+596    	; 0x3cc <USART_Transmit>
+								A++; //счётчик удержания правого переключателя от себя
+								_delay_ms(10);
+								if ((PINC&0x01)&(A<40))// короткое нажатие
+								{
+									gear_state(2);
+									Rpsh=0;
+ 178:	10 92 6b 00 	sts	0x006B, r1	; 0x80006b <Rpsh>
+									bs_Rpsh=0; //состояние драйва
+ 17c:	10 92 75 00 	sts	0x0075, r1	; 0x800075 <bs_Rpsh>
+									A=0;
+ 180:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <A>
+ 184:	10 92 67 00 	sts	0x0067, r1	; 0x800067 <A+0x1>
+ 188:	10 92 68 00 	sts	0x0068, r1	; 0x800068 <A+0x2>
+ 18c:	10 92 69 00 	sts	0x0069, r1	; 0x800069 <A+0x3>
+								}
+								if ((PINC&0x01)&(A>=40)) //длинное нажатие
+ 190:	83 b3       	in	r24, 0x13	; 19
+							}
+						}
+					}
+		}
+		//_______//реверс
+		if ((PINC&0x01)&(Rpsh==0)) //запрет одновременной активации реверса и драйва
+ 192:	83 b3       	in	r24, 0x13	; 19
+ 194:	dd 23       	and	r29, r29
+ 196:	09 f4       	brne	.+2      	; 0x19a <main+0x12c>
+ 198:	84 cf       	rjmp	.-248    	; 0xa2 <main+0x34>
+ 19a:	80 fd       	sbrc	r24, 0
+ 19c:	3d c0       	rjmp	.+122    	; 0x218 <main+0x1aa>
+ 19e:	81 cf       	rjmp	.-254    	; 0xa2 <main+0x34>
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+		case 3: USART_Transmit('D');   break;             //драйв
+		case 4: USART_Transmit('-');   break;             //-
+		case 5: USART_Transmit('+');   break;             //+
+		case 6: USART_Transmit('A');   break;             //авто/ручной
+ 1a0:	81 e4       	ldi	r24, 0x41	; 65
+ 1a2:	14 d1       	rcall	.+552    	; 0x3cc <USART_Transmit>
+									bs_Rpsh=0; //состояние драйва
+									A=0;
+								}
+								if ((PINC&0x01)&(A>=40)) //длинное нажатие
+								{
+									for (i=0; i<1; i++)//счётчик активности кнопки авто
+ 1a4:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <i>
+ 1a8:	90 91 63 00 	lds	r25, 0x0063	; 0x800063 <i+0x1>
+ 1ac:	a0 91 64 00 	lds	r26, 0x0064	; 0x800064 <i+0x2>
+ 1b0:	b0 91 65 00 	lds	r27, 0x0065	; 0x800065 <i+0x3>
+ 1b4:	01 96       	adiw	r24, 0x01	; 1
+ 1b6:	a1 1d       	adc	r26, r1
+ 1b8:	b1 1d       	adc	r27, r1
+ 1ba:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <i>
+ 1be:	90 93 63 00 	sts	0x0063, r25	; 0x800063 <i+0x1>
+ 1c2:	a0 93 64 00 	sts	0x0064, r26	; 0x800064 <i+0x2>
+ 1c6:	b0 93 65 00 	sts	0x0065, r27	; 0x800065 <i+0x3>
+ 1ca:	89 2b       	or	r24, r25
+ 1cc:	8a 2b       	or	r24, r26
+ 1ce:	8b 2b       	or	r24, r27
+ 1d0:	39 f3       	breq	.-50     	; 0x1a0 <main+0x132>
+									{
+										gear_state(6);
+									}
+									A=0;
+ 1d2:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <A>
+ 1d6:	10 92 67 00 	sts	0x0067, r1	; 0x800067 <A+0x1>
+ 1da:	10 92 68 00 	sts	0x0068, r1	; 0x800068 <A+0x2>
+ 1de:	10 92 69 00 	sts	0x0069, r1	; 0x800069 <A+0x3>
+									if (Amode==0)
+ 1e2:	80 91 72 00 	lds	r24, 0x0072	; 0x800072 <Amode>
+ 1e6:	81 11       	cpse	r24, r1
+ 1e8:	07 c0       	rjmp	.+14     	; 0x1f8 <main+0x18a>
+									{
+										EEPROM_write(1, 1); //запись авто режима
+ 1ea:	6c 2f       	mov	r22, r28
+ 1ec:	81 e0       	ldi	r24, 0x01	; 1
+ 1ee:	90 e0       	ldi	r25, 0x00	; 0
+ 1f0:	2b df       	rcall	.-426    	; 0x48 <EEPROM_write>
+										Amode=1;
+ 1f2:	c0 93 72 00 	sts	0x0072, r28	; 0x800072 <Amode>
+ 1f6:	06 c0       	rjmp	.+12     	; 0x204 <main+0x196>
+									}
+									else
+									{
+										EEPROM_write(1, 0); //запись авто режима
+ 1f8:	60 e0       	ldi	r22, 0x00	; 0
+ 1fa:	81 e0       	ldi	r24, 0x01	; 1
+ 1fc:	90 e0       	ldi	r25, 0x00	; 0
+ 1fe:	24 df       	rcall	.-440    	; 0x48 <EEPROM_write>
+										Amode=0;
+ 200:	10 92 72 00 	sts	0x0072, r1	; 0x800072 <Amode>
+							}
+						}
+					}
+		}
+		//_______//реверс
+		if ((PINC&0x01)&(Rpsh==0)) //запрет одновременной активации реверса и драйва
+ 204:	23 b3       	in	r18, 0x13	; 19
+ 206:	8c 2f       	mov	r24, r28
+ 208:	90 91 6b 00 	lds	r25, 0x006B	; 0x80006b <Rpsh>
+ 20c:	91 11       	cpse	r25, r1
+ 20e:	80 e0       	ldi	r24, 0x00	; 0
+ 210:	88 23       	and	r24, r24
+ 212:	b9 f1       	breq	.+110    	; 0x282 <main+0x214>
+ 214:	20 ff       	sbrs	r18, 0
+ 216:	35 c0       	rjmp	.+106    	; 0x282 <main+0x214>
+		{
+					if (bs_Lpsh==0)
+ 218:	80 91 6d 00 	lds	r24, 0x006D	; 0x80006d <bs_Lpsh>
+ 21c:	81 11       	cpse	r24, r1
+ 21e:	19 c0       	rjmp	.+50     	; 0x252 <main+0x1e4>
+					{
+						if (!(PINC&0x04))
+ 220:	9a 99       	sbic	0x13, 2	; 19
+ 222:	2f c0       	rjmp	.+94     	; 0x282 <main+0x214>
+ 224:	83 ec       	ldi	r24, 0xC3	; 195
+ 226:	99 e0       	ldi	r25, 0x09	; 9
+ 228:	01 97       	sbiw	r24, 0x01	; 1
+ 22a:	f1 f7       	brne	.-4      	; 0x228 <main+0x1ba>
+ 22c:	00 c0       	rjmp	.+0      	; 0x22e <main+0x1c0>
+ 22e:	00 00       	nop
+						{
+							_delay_ms(10);
+							Lpsh=1;
+ 230:	c0 93 6a 00 	sts	0x006A, r28	; 0x80006a <Lpsh>
+							if (Lpsh1==0)//счётчик активности кнопки реверс
+ 234:	80 91 70 00 	lds	r24, 0x0070	; 0x800070 <Lpsh1>
+ 238:	81 11       	cpse	r24, r1
+ 23a:	04 c0       	rjmp	.+8      	; 0x244 <main+0x1d6>
+
+void gear_state(unsigned char gs)   //состояния кпп
+{
+	switch(gs)
+	{
+		case 1: USART_Transmit('R');   break;            //реверс
+ 23c:	82 e5       	ldi	r24, 0x52	; 82
+ 23e:	c6 d0       	rcall	.+396    	; 0x3cc <USART_Transmit>
+							_delay_ms(10);
+							Lpsh=1;
+							if (Lpsh1==0)//счётчик активности кнопки реверс
+							{
+								gear_state(1);
+								Lpsh1=1;
+ 240:	c0 93 70 00 	sts	0x0070, r28	; 0x800070 <Lpsh1>
+							}
+							if (PINC&0x04)
+ 244:	9a 9b       	sbis	0x13, 2	; 19
+ 246:	1d c0       	rjmp	.+58     	; 0x282 <main+0x214>
+							{
+								bs_Lpsh=1;
+ 248:	c0 93 6d 00 	sts	0x006D, r28	; 0x80006d <bs_Lpsh>
+								Lpsh1=0;
+ 24c:	10 92 70 00 	sts	0x0070, r1	; 0x800070 <Lpsh1>
+ 250:	18 c0       	rjmp	.+48     	; 0x282 <main+0x214>
+							}
+						}
+					}
+					else
+					{
+						if (!(PINC&0x04))
+ 252:	9a 99       	sbic	0x13, 2	; 19
+ 254:	16 c0       	rjmp	.+44     	; 0x282 <main+0x214>
+ 256:	83 ec       	ldi	r24, 0xC3	; 195
+ 258:	99 e0       	ldi	r25, 0x09	; 9
+ 25a:	01 97       	sbiw	r24, 0x01	; 1
+ 25c:	f1 f7       	brne	.-4      	; 0x25a <main+0x1ec>
+ 25e:	00 c0       	rjmp	.+0      	; 0x260 <main+0x1f2>
+ 260:	00 00       	nop
+						{
+							_delay_ms(10);
+							Lpsh=0;
+ 262:	10 92 6a 00 	sts	0x006A, r1	; 0x80006a <Lpsh>
+							if (N==0)
+ 266:	80 91 6c 00 	lds	r24, 0x006C	; 0x80006c <N>
+ 26a:	81 11       	cpse	r24, r1
+ 26c:	04 c0       	rjmp	.+8      	; 0x276 <main+0x208>
+void gear_state(unsigned char gs)   //состояния кпп
+{
+	switch(gs)
+	{
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+ 26e:	8e e4       	ldi	r24, 0x4E	; 78
+ 270:	ad d0       	rcall	.+346    	; 0x3cc <USART_Transmit>
+							_delay_ms(10);
+							Lpsh=0;
+							if (N==0)
+							{
+								gear_state(2);
+								N=1;
+ 272:	c0 93 6c 00 	sts	0x006C, r28	; 0x80006c <N>
+							}
+							if (PINC&0x04)
+ 276:	9a 9b       	sbis	0x13, 2	; 19
+ 278:	04 c0       	rjmp	.+8      	; 0x282 <main+0x214>
+							{
+								bs_Lpsh=0;
+ 27a:	10 92 6d 00 	sts	0x006D, r1	; 0x80006d <bs_Lpsh>
+								N=0;
+ 27e:	10 92 6c 00 	sts	0x006C, r1	; 0x80006c <N>
+							}
+						}
+					}
+		}
+		//______ручное переключение
+		if (bs_Rpsh==1) //передача вверх
+ 282:	80 91 75 00 	lds	r24, 0x0075	; 0x800075 <bs_Rpsh>
+ 286:	81 30       	cpi	r24, 0x01	; 1
+ 288:	09 f0       	breq	.+2      	; 0x28c <main+0x21e>
+ 28a:	0b cf       	rjmp	.-490    	; 0xa2 <main+0x34>
+		{
+			if ((!(PINC&0x02))&(bs_Lpl==0)) //проверка нажатия и запрет одновременного включения + м -
+ 28c:	83 b3       	in	r24, 0x13	; 19
+ 28e:	86 95       	lsr	r24
+ 290:	81 70       	andi	r24, 0x01	; 1
+ 292:	8d 17       	cp	r24, r29
+ 294:	41 f1       	breq	.+80     	; 0x2e6 <main+0x278>
+ 296:	8d 2f       	mov	r24, r29
+ 298:	90 91 6e 00 	lds	r25, 0x006E	; 0x80006e <bs_Lpl>
+ 29c:	91 11       	cpse	r25, r1
+ 29e:	80 e0       	ldi	r24, 0x00	; 0
+ 2a0:	88 23       	and	r24, r24
+ 2a2:	09 f1       	breq	.+66     	; 0x2e6 <main+0x278>
+ 2a4:	83 ec       	ldi	r24, 0xC3	; 195
+ 2a6:	99 e0       	ldi	r25, 0x09	; 9
+ 2a8:	01 97       	sbiw	r24, 0x01	; 1
+ 2aa:	f1 f7       	brne	.-4      	; 0x2a8 <main+0x23a>
+ 2ac:	00 c0       	rjmp	.+0      	; 0x2ae <main+0x240>
+ 2ae:	00 00       	nop
+			{
+				_delay_ms(10);
+				if(up1==0)
+ 2b0:	80 91 71 00 	lds	r24, 0x0071	; 0x800071 <up1>
+ 2b4:	81 11       	cpse	r24, r1
+ 2b6:	04 c0       	rjmp	.+8      	; 0x2c0 <main+0x252>
+	{
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+		case 3: USART_Transmit('D');   break;             //драйв
+		case 4: USART_Transmit('-');   break;             //-
+		case 5: USART_Transmit('+');   break;             //+
+ 2b8:	8b e2       	ldi	r24, 0x2B	; 43
+ 2ba:	88 d0       	rcall	.+272    	; 0x3cc <USART_Transmit>
+			{
+				_delay_ms(10);
+				if(up1==0)
+				{
+					gear_state(5);
+					up1=1;
+ 2bc:	c0 93 71 00 	sts	0x0071, r28	; 0x800071 <up1>
+				}
+				bs_Rpl=1;
+ 2c0:	c0 93 6f 00 	sts	0x006F, r28	; 0x80006f <bs_Rpl>
+				if (eep<1) //счётчик одной записи
+ 2c4:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <eep>
+ 2c8:	81 11       	cpse	r24, r1
+ 2ca:	74 c0       	rjmp	.+232    	; 0x3b4 <main+0x346>
+				{
+					EEPROM_write(1, 0); //однократная запись ручного режима
+ 2cc:	60 e0       	ldi	r22, 0x00	; 0
+ 2ce:	81 e0       	ldi	r24, 0x01	; 1
+ 2d0:	90 e0       	ldi	r25, 0x00	; 0
+ 2d2:	ba de       	rcall	.-652    	; 0x48 <EEPROM_write>
+// 					gear_state(1); //индикатор записи
+// 					_delay_ms(500); 
+					eep=1;
+ 2d4:	c0 93 61 00 	sts	0x0061, r28	; 0x800061 <eep>
+					Amode=0;
+ 2d8:	10 92 72 00 	sts	0x0072, r1	; 0x800072 <Amode>
+				}
+				if(PINC&0x02)
+ 2dc:	99 9b       	sbis	0x13, 1	; 19
+ 2de:	07 c0       	rjmp	.+14     	; 0x2ee <main+0x280>
+				{
+					up1=0;
+ 2e0:	10 92 71 00 	sts	0x0071, r1	; 0x800071 <up1>
+ 2e4:	04 c0       	rjmp	.+8      	; 0x2ee <main+0x280>
+				}
+			}
+			else
+			{
+				//gear_state(3);
+				bs_Rpl=0;
+ 2e6:	10 92 6f 00 	sts	0x006F, r1	; 0x80006f <bs_Rpl>
+				eep=0;
+ 2ea:	10 92 61 00 	sts	0x0061, r1	; 0x800061 <eep>
+			}
+			//передача вниз
+			if ((!(PINC&0x08))&(bs_Rpl==0)) //проверка нажатия и запрет одновременного включения + м -
+ 2ee:	83 b3       	in	r24, 0x13	; 19
+ 2f0:	83 fb       	bst	r24, 3
+ 2f2:	88 27       	eor	r24, r24
+ 2f4:	80 f9       	bld	r24, 0
+ 2f6:	8d 17       	cp	r24, r29
+ 2f8:	41 f1       	breq	.+80     	; 0x34a <main+0x2dc>
+ 2fa:	8d 2f       	mov	r24, r29
+ 2fc:	90 91 6f 00 	lds	r25, 0x006F	; 0x80006f <bs_Rpl>
+ 300:	91 11       	cpse	r25, r1
+ 302:	80 e0       	ldi	r24, 0x00	; 0
+ 304:	88 23       	and	r24, r24
+ 306:	09 f1       	breq	.+66     	; 0x34a <main+0x2dc>
+ 308:	83 ec       	ldi	r24, 0xC3	; 195
+ 30a:	99 e0       	ldi	r25, 0x09	; 9
+ 30c:	01 97       	sbiw	r24, 0x01	; 1
+ 30e:	f1 f7       	brne	.-4      	; 0x30c <main+0x29e>
+ 310:	00 c0       	rjmp	.+0      	; 0x312 <main+0x2a4>
+ 312:	00 00       	nop
+			{
+				_delay_ms(10);
+				if (dn1==0)
+ 314:	80 91 74 00 	lds	r24, 0x0074	; 0x800074 <dn1>
+ 318:	81 11       	cpse	r24, r1
+ 31a:	04 c0       	rjmp	.+8      	; 0x324 <main+0x2b6>
+	switch(gs)
+	{
+		case 1: USART_Transmit('R');   break;            //реверс
+		case 2: USART_Transmit('N');   break;             //нейтраль
+		case 3: USART_Transmit('D');   break;             //драйв
+		case 4: USART_Transmit('-');   break;             //-
+ 31c:	8d e2       	ldi	r24, 0x2D	; 45
+ 31e:	56 d0       	rcall	.+172    	; 0x3cc <USART_Transmit>
+			{
+				_delay_ms(10);
+				if (dn1==0)
+				{
+					gear_state(4);
+					dn1=1;
+ 320:	c0 93 74 00 	sts	0x0074, r28	; 0x800074 <dn1>
+				}
+
+				bs_Lpl=1;
+ 324:	c0 93 6e 00 	sts	0x006E, r28	; 0x80006e <bs_Lpl>
+				if (eepl<1) //счётчик одной записи
+ 328:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <_edata>
+ 32c:	81 11       	cpse	r24, r1
+ 32e:	08 c0       	rjmp	.+16     	; 0x340 <main+0x2d2>
+				{
+					EEPROM_write(1, 0); //однократная запись ручного режима
+ 330:	60 e0       	ldi	r22, 0x00	; 0
+ 332:	81 e0       	ldi	r24, 0x01	; 1
+ 334:	90 e0       	ldi	r25, 0x00	; 0
+ 336:	88 de       	rcall	.-752    	; 0x48 <EEPROM_write>
+// 					gear_state(1); //индикатор записи
+// 					_delay_ms(500); 
+					eepl=1;
+ 338:	c0 93 60 00 	sts	0x0060, r28	; 0x800060 <_edata>
+					Amode=0;
+ 33c:	10 92 72 00 	sts	0x0072, r1	; 0x800072 <Amode>
+				}
+				if (PINC&0x08)
+ 340:	9b 9b       	sbis	0x13, 3	; 19
+ 342:	af ce       	rjmp	.-674    	; 0xa2 <main+0x34>
+				{
+					dn1=0;
+ 344:	10 92 74 00 	sts	0x0074, r1	; 0x800074 <dn1>
+ 348:	ac ce       	rjmp	.-680    	; 0xa2 <main+0x34>
+				}
+			}
+			else
+			{
+				//gear_state(3);
+				bs_Lpl=0;
+ 34a:	10 92 6e 00 	sts	0x006E, r1	; 0x80006e <bs_Lpl>
+				eepl=0;
+ 34e:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <_edata>
+ 352:	a7 ce       	rjmp	.-690    	; 0xa2 <main+0x34>
+									bs_Rpsh=0; //состояние драйва
+									A=0;
+								}
+								if ((PINC&0x01)&(A>=40)) //длинное нажатие
+								{
+									for (i=0; i<1; i++)//счётчик активности кнопки авто
+ 354:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <i>
+ 358:	10 92 63 00 	sts	0x0063, r1	; 0x800063 <i+0x1>
+ 35c:	10 92 64 00 	sts	0x0064, r1	; 0x800064 <i+0x2>
+ 360:	10 92 65 00 	sts	0x0065, r1	; 0x800065 <i+0x3>
+ 364:	1d cf       	rjmp	.-454    	; 0x1a0 <main+0x132>
+									gear_state(2);
+									Rpsh=0;
+									bs_Rpsh=0; //состояние драйва
+									A=0;
+								}
+								if ((PINC&0x01)&(A>=40)) //длинное нажатие
+ 366:	33 b3       	in	r19, 0x13	; 19
+ 368:	2c 2f       	mov	r18, r28
+ 36a:	88 97       	sbiw	r24, 0x28	; 40
+ 36c:	a1 05       	cpc	r26, r1
+ 36e:	b1 05       	cpc	r27, r1
+ 370:	08 f4       	brcc	.+2      	; 0x374 <main+0x306>
+ 372:	20 e0       	ldi	r18, 0x00	; 0
+ 374:	22 23       	and	r18, r18
+ 376:	09 f4       	brne	.+2      	; 0x37a <main+0x30c>
+ 378:	45 cf       	rjmp	.-374    	; 0x204 <main+0x196>
+ 37a:	30 fd       	sbrc	r19, 0
+ 37c:	eb cf       	rjmp	.-42     	; 0x354 <main+0x2e6>
+ 37e:	42 cf       	rjmp	.-380    	; 0x204 <main+0x196>
+							}
+						}
+					}
+		}
+		//_______//реверс
+		if ((PINC&0x01)&(Rpsh==0)) //запрет одновременной активации реверса и драйва
+ 380:	23 b3       	in	r18, 0x13	; 19
+ 382:	8c 2f       	mov	r24, r28
+ 384:	90 91 6b 00 	lds	r25, 0x006B	; 0x80006b <Rpsh>
+ 388:	91 11       	cpse	r25, r1
+ 38a:	80 e0       	ldi	r24, 0x00	; 0
+ 38c:	88 23       	and	r24, r24
+ 38e:	09 f4       	brne	.+2      	; 0x392 <main+0x324>
+ 390:	7d cf       	rjmp	.-262    	; 0x28c <main+0x21e>
+ 392:	20 fd       	sbrc	r18, 0
+ 394:	41 cf       	rjmp	.-382    	; 0x218 <main+0x1aa>
+ 396:	7a cf       	rjmp	.-268    	; 0x28c <main+0x21e>
+ 398:	23 b3       	in	r18, 0x13	; 19
+ 39a:	8c 2f       	mov	r24, r28
+ 39c:	90 91 6b 00 	lds	r25, 0x006B	; 0x80006b <Rpsh>
+ 3a0:	91 11       	cpse	r25, r1
+ 3a2:	80 e0       	ldi	r24, 0x00	; 0
+ 3a4:	88 23       	and	r24, r24
+ 3a6:	09 f4       	brne	.+2      	; 0x3aa <main+0x33c>
+ 3a8:	7c ce       	rjmp	.-776    	; 0xa2 <main+0x34>
+ 3aa:	20 fd       	sbrc	r18, 0
+ 3ac:	35 cf       	rjmp	.-406    	; 0x218 <main+0x1aa>
+ 3ae:	79 ce       	rjmp	.-782    	; 0xa2 <main+0x34>
+				//gear_state(3);
+				bs_Rpl=0;
+				eep=0;
+			}
+			//передача вниз
+			if ((!(PINC&0x08))&(bs_Rpl==0)) //проверка нажатия и запрет одновременного включения + м -
+ 3b0:	83 b3       	in	r24, 0x13	; 19
+ 3b2:	cb cf       	rjmp	.-106    	; 0x34a <main+0x2dc>
+// 					gear_state(1); //индикатор записи
+// 					_delay_ms(500); 
+					eep=1;
+					Amode=0;
+				}
+				if(PINC&0x02)
+ 3b4:	99 99       	sbic	0x13, 1	; 19
+ 3b6:	94 cf       	rjmp	.-216    	; 0x2e0 <main+0x272>
+ 3b8:	fb cf       	rjmp	.-10     	; 0x3b0 <main+0x342>
+
+000003ba <USART_Init>:
+ *  Author: Dude
+ */ 
+#include "USART.h"
+void USART_Init (unsigned int speed) //инициализация модуля USART
+{
+	UBRRH = (unsigned char)(speed>>8);
+ 3ba:	90 bd       	out	0x20, r25	; 32
+	UBRRL = (unsigned char)speed;
+ 3bc:	89 b9       	out	0x09, r24	; 9
+	UCSRB = (1<<RXEN)|(1<<TXEN); //включаем передачу и приём по USART
+ 3be:	88 e1       	ldi	r24, 0x18	; 24
+ 3c0:	8a b9       	out	0x0a, r24	; 10
+	UCSRB|= (1<<RXCIE); //разрешаем прерывание при передаче
+ 3c2:	57 9a       	sbi	0x0a, 7	; 10
+	UCSRA|=(1<<U2X); // удвоенная скорост ьпередачи данных
+ 3c4:	59 9a       	sbi	0x0b, 1	; 11
+	UCSRC = (1<<URSEL)|(1<<USBS)|(1<<UCSZ1)|(1<<UCSZ0); //обращаемся именно к регистру UCSRC(URSEL=1), асинхронный режим (UMSEL=0), без контроля чётности (UPM1=0 и UPM0=0),
+ 3c6:	8e e8       	ldi	r24, 0x8E	; 142
+ 3c8:	80 bd       	out	0x20, r24	; 32
+ 3ca:	08 95       	ret
+
+000003cc <USART_Transmit>:
+	//1 стоп-бит (USBS=0), 8-бит посылка (UCSZ1=1 UCSZ0=1) UCSRC |= (1<<UPM1); чётность
+}
+void USART_Transmit(unsigned char data) //функция отправки данных
+{
+	while(!(UCSRA&(1<<UDRE))); //ожидание опустошения буфера приёма
+ 3cc:	5d 9b       	sbis	0x0b, 5	; 11
+ 3ce:	fe cf       	rjmp	.-4      	; 0x3cc <USART_Transmit>
+	UDR=data; //начало передачи данных
+ 3d0:	8c b9       	out	0x0c, r24	; 12
+ 3d2:	08 95       	ret
+
+000003d4 <_exit>:
+ 3d4:	f8 94       	cli
+
+000003d6 <__stop_program>:
+ 3d6:	ff cf       	rjmp	.-2      	; 0x3d6 <__stop_program>

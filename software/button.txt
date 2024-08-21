@@ -1,0 +1,32 @@
+if (bs==1)
+		{
+			if (!(PINC&0x01))
+			{
+				gear_state(2);
+				_delay_ms(10);
+				if (PINC&0x01)
+				{
+					bs=0;
+				}
+			}
+			else
+			{
+				gear_state(3);
+			}
+		}
+		else
+		{
+			if (!(PINC&0x01))
+			{
+				gear_state(3);
+				_delay_ms(10);
+				if (PINC&0x01)
+				{
+					bs=1;
+				}
+			}
+			else
+			{
+				gear_state(2);
+			}
+		}
